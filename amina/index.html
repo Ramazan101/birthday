@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Happy Birthday, Amina! 🎂</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #030305;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 8px 34px;
+      overflow-x: hidden;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 99;
+    }
+
+    .main-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 880px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       5 СВЕЧЕЙ С РЕАЛИСТИЧНЫМ ЖИВЫМ ОГНЁМ
+       ========================================================= */
+    .candles-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      width: 38%;
+      min-width: 145px;
+      max-width: 310px;
+      height: clamp(100px, 16vh, 140px);
+      margin-bottom: 4px;
+    }
+
+    .candle {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      outline: none;
+      padding: 0 4px;
+    }
+
+    .flame-wrap {
+      position: relative;
+      width: 22px;
+      height: 34px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 1px;
+    }
+
+    /* Внешнее пульсирующее свечение вокруг огня */
+    .flame-aura {
+      position: absolute;
+      bottom: 2px;
+      width: 28px;
+      height: 36px;
+      background: radial-gradient(circle, rgba(255, 140, 0, 0.55) 0%, rgba(255, 60, 0, 0) 70%);
+      border-radius: 50%;
+      animation: auraPulse 1.8s infinite alternate ease-in-out;
+      pointer-events: none;
+    }
+
+    /* Основной язычок живого пламени */
+    .flame {
+      position: relative;
+      width: clamp(10px, 2.2vw, 14px);
+      height: clamp(22px, 4.2vw, 30px);
+      background: radial-gradient(ellipse at 50% 82%, #ffffff 0%, #fff380 28%, #ff9900 62%, #ff2a00 94%);
+      border-radius: 50% 50% 22% 22% / 65% 65% 35% 35%;
+      box-shadow:
+        0 0 12px 3px rgba(255, 155, 0, 0.9),
+        0 0 26px 8px rgba(255, 70, 0, 0.5),
+        0 -4px 14px 2px rgba(255, 220, 0, 0.4);
+      transform-origin: 50% 92%;
+      animation: livingFire 2.1s infinite ease-in-out;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Горячее бело-голубое ядро у фитиля */
+    .flame::after {
+      content: "";
+      position: absolute;
+      bottom: 1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 45%;
+      height: 32%;
+      background: radial-gradient(ellipse at bottom, rgba(160, 215, 255, 0.9) 0%, rgba(255, 255, 255, 0.95) 60%, transparent 100%);
+      border-radius: 50%;
+    }
+
+    /* Индивидуальный ритм для каждой свечи (эффект живого воздуха) */
+    .candle:nth-child(1) .flame { animation-duration: 1.85s; animation-delay: -0.2s; }
+    .candle:nth-child(2) .flame { animation-duration: 2.35s; animation-delay: -1.1s; }
+    .candle:nth-child(3) .flame { animation-duration: 1.65s; animation-delay: -0.6s; }
+    .candle:nth-child(4) .flame { animation-duration: 2.15s; animation-delay: -1.5s; }
+    .candle:nth-child(5) .flame { animation-duration: 1.95s; animation-delay: -0.4s; }
+
+    .candle:nth-child(2) .flame-aura { animation-duration: 1.4s; }
+    .candle:nth-child(4) .flame-aura { animation-duration: 2.2s; }
+
+    @keyframes livingFire {
+      0% {
+        transform: scale(1, 1) rotate(-2deg) skewX(-2deg);
+        border-radius: 50% 50% 22% 22% / 65% 65% 35% 35%;
+      }
+      18% {
+        transform: scale(0.92, 1.14) rotate(3deg) skewX(4deg);
+        border-radius: 45% 55% 22% 22% / 70% 60% 35% 35%;
+      }
+      36% {
+        transform: scale(1.08, 0.88) rotate(-4deg) skewX(-3deg);
+      }
+      54% {
+        transform: scale(0.95, 1.18) rotate(2deg) skewX(2deg);
+        border-radius: 55% 45% 22% 22% / 60% 70% 35% 35%;
+      }
+      72% {
+        transform: scale(1.06, 0.91) rotate(4deg) skewX(5deg);
+      }
+      88% {
+        transform: scale(0.94, 1.1) rotate(-3deg) skewX(-4deg);
+      }
+      100% {
+        transform: scale(1, 1) rotate(-2deg) skewX(-2deg);
+        border-radius: 50% 50% 22% 22% / 65% 65% 35% 35%;
+      }
+    }
+
+    @keyframes auraPulse {
+      0%   { transform: scale(0.85); opacity: 0.7; }
+      50%  { transform: scale(1.25); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .candle.extinguished .flame,
+    .candle.extinguished .flame-aura {
+      opacity: 0;
+      transform: scale(0.1) translateY(-8px);
+      pointer-events: none;
+    }
+
+    .smoke-puff {
+      position: absolute;
+      bottom: 2px;
+      width: 6px;
+      height: 6px;
+      background: radial-gradient(circle, rgba(220, 225, 230, 0.85) 0%, rgba(180, 190, 200, 0) 70%);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .candle.extinguished .smoke-puff {
+      animation: puffSmoke 1.2s ease-out forwards;
+    }
+
+    @keyframes puffSmoke {
+      0%   { opacity: 0.9; transform: translateY(0) scale(1); }
+      50%  { opacity: 0.45; transform: translateY(-18px) scale(2.6) translateX(4px); }
+      100% { opacity: 0; transform: translateY(-38px) scale(4.2) translateX(-5px); }
+    }
+
+    .wick {
+      width: 2px;
+      height: 4px;
+      background: #231b17;
+    }
+
+    .candle-stick {
+      width: clamp(2.5px, 0.55vw, 3.5px);
+      height: clamp(54px, 9.5vh, 82px);
+      background: linear-gradient(180deg, #dbeafe 0%, #60a5fa 55%, #1d4ed8 100%);
+      border-radius: 2px;
+    }
+
+    .candle.extinguished .candle-stick {
+      background: linear-gradient(180deg, #475569 0%, #1e293b 100%);
+    }
+
+    .base-dot {
+      width: clamp(4px, 0.85vw, 5.5px);
+      height: clamp(4px, 0.85vw, 5.5px);
+      background: #ff4500;
+      border-radius: 50%;
+      margin-top: 5px;
+      box-shadow: 0 0 8px 2px rgba(255, 69, 0, 0.95);
+      transition: opacity 0.35s ease, background 0.35s ease;
+    }
+
+    .candle.extinguished .base-dot {
+      opacity: 0.25;
+      background: #334155;
+      box-shadow: none;
+    }
+
+    /* =========================================================
+       ТОРТИК ИЗ 3 ЯРУСОВ (3 ЛИНИИ -> 5 ЛИНИЙ -> 7 ЛИНИЙ)
+       С НЕБОЛЬШИМ РАССТОЯНИЕМ МЕЖДУ СЛОВАМИ
+       ========================================================= */
+    .cake-structure {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .cake-tier {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: visible;
+    }
+
+    /* 1-й верхний ярус: 3 линии */
+    .tier-top {
+      width: 46%;
+      margin-bottom: 3px;
+    }
+
+    /* 2-й средний ярус: 5 линий */
+    .tier-mid {
+      width: 72%;
+      margin-bottom: 3px;
+    }
+
+    /* 3-й нижний ярус: 7 линий */
+    .tier-bot {
+      width: 98%;
+    }
+
+    .cake-line {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      line-height: 1.34;
+      margin: 0.8px 0;
+    }
+
+    /* Лёгкая естественная форма краёв торта, чтобы он выглядел живым */
+    .cake-tier .cake-line:first-child { width: 98.5%; }
+    .cake-tier .cake-line:nth-child(even) { width: 100%; }
+    .cake-tier .cake-line:last-child { width: 99.2%; }
+
+    .line-inner {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px; /* Небольшое аккуратное расстояние между поздравлениями */
+      white-space: nowrap;
+      transform-origin: center center;
+    }
+
+    .w {
+      display: inline-block;
+      white-space: nowrap;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      text-shadow: 0 0 6px currentColor;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.18s ease;
+    }
+
+    .w:hover, .w.pop {
+      transform: scale(1.16) translateY(-2px);
+      filter: brightness(1.3) drop-shadow(0 0 10px currentColor);
+      z-index: 5;
+    }
+
+    /* Цветовая палитра */
+    .c-cyan    { color: #38bdf8; }
+    .c-bcyan   { color: #00f2fe; }
+    .c-pink    { color: #f72585; }
+    .c-rose    { color: #ff3385; }
+    .c-purple  { color: #c084fc; }
+    .c-violet  { color: #a855f7; }
+    .c-yellow  { color: #ffd166; }
+    .c-gold    { color: #fde047; }
+    .c-white   { color: #ffffff; }
+    .c-peach   { color: #ff9a76; }
+    .c-coral   { color: #ff6b6b; }
+    .c-mint    { color: #64dfdf; }
+    .c-lime    { color: #a3e635; }
+    .c-ice     { color: #bae6fd; }
+
+    /* Панель управления и поздравления под тортом */
+    .controls-area {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-height: 54px;
+    }
+
+    .celebrate-msg {
+      font-size: clamp(0.8rem, 2.3vw, 0.98rem);
+      color: #ffd166;
+      text-align: center;
+      text-shadow: 0 0 10px rgba(255, 209, 102, 0.6);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      padding: 0 10px;
+    }
+
+    .celebrate-msg.show {
+      opacity: 1;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .action-btn {
+      background: rgba(255, 209, 102, 0.14);
+      color: #ffd166;
+      border: 1px solid rgba(255, 209, 102, 0.45);
+      border-radius: 18px;
+      padding: 6px 16px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:active, .action-btn:hover {
+      background: rgba(255, 209, 102, 0.28);
+      transform: scale(1.04);
+    }
+
+    .footer-text {
+      margin-top: 8px;
+      font-size: clamp(0.65rem, 1.8vw, 0.75rem);
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: 0.4px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <main class="main-wrapper">
+
+    <!-- 5 СВЕЧЕЙ ПРЯМО НАД ВЕРХНИМ ЯРУСОМ -->
+    <section class="candles-group" aria-label="Свечи для Амины">
+      <div class="candle" data-index="0" role="button" tabindex="0">
+        <div class="flame-wrap">
+          <div class="flame-aura"></div>
+          <div class="flame"></div>
+          <div class="smoke-puff"></div>
+        </div>
+        <div class="wick"></div>
+        <div class="candle-stick"></div>
+        <div class="base-dot"></div>
+      </div>
+
+      <div class="candle" data-index="1" role="button" tabindex="0">
+        <div class="flame-wrap">
+          <div class="flame-aura"></div>
+          <div class="flame"></div>
+          <div class="smoke-puff"></div>
+        </div>
+        <div class="wick"></div>
+        <div class="candle-stick" style="height: clamp(60px, 10.5vh, 90px);"></div>
+        <div class="base-dot"></div>
+      </div>
+
+      <div class="candle" data-index="2" role="button" tabindex="0">
+        <div class="flame-wrap">
+          <div class="flame-aura"></div>
+          <div class="flame"></div>
+          <div class="smoke-puff"></div>
+        </div>
+        <div class="wick"></div>
+        <div class="candle-stick" style="height: clamp(66px, 11.5vh, 98px);"></div>
+        <div class="base-dot"></div>
+      </div>
+
+      <div class="candle" data-index="3" role="button" tabindex="0">
+        <div class="flame-wrap">
+          <div class="flame-aura"></div>
+          <div class="flame"></div>
+          <div class="smoke-puff"></div>
+        </div>
+        <div class="wick"></div>
+        <div class="candle-stick" style="height: clamp(60px, 10.5vh, 90px);"></div>
+        <div class="base-dot"></div>
+      </div>
+
+      <div class="candle" data-index="4" role="button" tabindex="0">
+        <div class="flame-wrap">
+          <div class="flame-aura"></div>
+          <div class="flame"></div>
+          <div class="smoke-puff"></div>
+        </div>
+        <div class="wick"></div>
+        <div class="candle-stick"></div>
+        <div class="base-dot"></div>
+      </div>
+    </section>
+
+    <!-- ТОРТ ИЗ 3 ЯРУСОВ: 3 ЛИНИИ + 5 ЛИНИЙ + 7 ЛИНИЙ -->
+    <section class="cake-structure" aria-label="Торт из поздравлений">
+
+      <!-- ЯРУС 1: 3 ГОРИЗОНТАЛЬНЫЕ ЛИНИИ -->
+      <div class="cake-tier tier-top">
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-purple">Gefeliciteerd, Amina</span>
+          <span class="w c-rose">お誕生日おめでとう アミナ</span>
+          <span class="w c-yellow">阿米娜，生日快乐</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-cyan">Wszystkiego najlepszego, Amina</span>
+          <span class="w c-white">С днём рождения, Амина!</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-mint">Selamat ulang tahun, Amina</span>
+          <span class="w c-pink">Happy Birthday, Amina!</span>
+        </div></div>
+      </div>
+
+      <!-- ЯРУС 2: 5 ГОРИЗОНТАЛЬНЫХ ЛИНИЙ -->
+      <div class="cake-tier tier-mid">
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-cyan">Joyeux anniversaire, Amina</span>
+          <span class="w c-yellow">Χρόνια πολλά, Αμίνα</span>
+          <span class="w c-bcyan">С днём рождения, Амина!</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-ice">İyi ki doğdun, Amina</span>
+          <span class="w c-pink">¡Feliz cumpleaños, Amina!</span>
+          <span class="w c-gold">お誕生日おめでとう アミナ</span>
+          <span class="w c-purple">Gefeliciteerd</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-white">Туулган күнүң менен, Амина!</span>
+          <span class="w c-rose">Alles Gute zum Geburtstag, Amina</span>
+          <span class="w c-mint">Buon compleanno, Amina</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-yellow">Chúc mừng sinh nhật, Amina</span>
+          <span class="w c-bcyan">Happy Birthday, Amina!</span>
+          <span class="w c-purple">Grattis på födelsedagen, Amina</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-peach">Feliz aniversário, Amina</span>
+          <span class="w c-pink">생일 축하해요, 아미나</span>
+          <span class="w c-white">С днём рождения, Амина!</span>
+          <span class="w c-cyan">İyi ki doğdun</span>
+        </div></div>
+      </div>
+
+      <!-- ЯРУС 3: 7 ГОРИЗОНТАЛЬНЫХ ЛИНИЙ -->
+      <div class="cake-tier tier-bot">
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-coral">Všechno nejlepší, Amina</span>
+          <span class="w c-bcyan">З днем народження, Аміна!</span>
+          <span class="w c-yellow">जन्मदिन मुबारक हो, अमीना!</span>
+          <span class="w c-white">Tillykke med fødselsdagen, Amina</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-gold">Туған күніңмен, Амина!</span>
+          <span class="w c-pink">Happy Birthday, Amina!</span>
+          <span class="w c-white">Туулган күнүң менен, Амина!</span>
+          <span class="w c-purple">Tug'ilgan kuningiz bilan, Amina!</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-ice">Hyvää syntymäpäivää, Amina</span>
+          <span class="w c-yellow">阿米娜，生日快乐</span>
+          <span class="w c-cyan">Joyeux anniversaire, Amina</span>
+          <span class="w c-rose">С днём рождения, Амина!</span>
+          <span class="w c-mint">Gefeliciteerd, Amina</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-lime">Boldog születésnapot, Amina</span>
+          <span class="w c-pink">お誕生日おめでとう アミナ</span>
+          <span class="w c-bcyan">Alles Gute zum Geburtstag, Amina</span>
+          <span class="w c-peach">Ad günün mübarək, Amina!</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-white">La mulți ani, Amina!</span>
+          <span class="w c-purple">Gratulerer med dagen, Amina</span>
+          <span class="w c-gold">¡Feliz cumpleaños, Amina!</span>
+          <span class="w c-coral">สุขสันต์วันเกิด อามินา!</span>
+          <span class="w c-cyan">İyi ki doğdun, Amina</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-peach">Төрсөн өдрийн баяр хүргэе, Амина!</span>
+          <span class="w c-bcyan">Buon compleanno, Amina</span>
+          <span class="w c-lime">Selamat hari lahir, Amina</span>
+          <span class="w c-rose">Všetko najlepšie, Amina</span>
+        </div></div>
+        <div class="cake-line"><div class="line-inner">
+          <span class="w c-purple">Wszystkiego najlepszego, Amina</span>
+          <span class="w c-white">Туулган күнүң менен, Амина!</span>
+          <span class="w c-pink">С днём рождения, Амина!</span>
+          <span class="w c-gold">Happy Birthday, Amina!</span>
+        </div></div>
+      </div>
+
+    </section>
+
+    <!-- БЛОК СООБЩЕНИЯ И КНОПОК -->
+    <div class="controls-area">
+      <div id="celebrate-msg" class="celebrate-msg">
+        ✨ Все свечи задуты! С днём рождения, Амина! ✨
+      </div>
+      <div class="btn-row">
+        <button id="music-btn" class="action-btn">🎵 Сыграть мелодию ещё раз</button>
+        <button id="relight-btn" class="action-btn" style="display: none;">🔥 Зажечь свечи снова</button>
+      </div>
+      <footer class="footer-text">
+        Нажимай на слова и свечи • С любовью для Амины
+      </footer>
+    </div>
+
+  </main>
+
+  <script>
+    /* =========================================================
+       1. АВТОМАТИЧЕСКОЕ ВЫРАВНИВАНИЕ ЛИНИЙ ПО ШИРИНЕ ЯРУСА
+       Сохраняет форму трёхъярусного торта (3 - 5 - 7) с пробелами
+       ========================================================= */
+    function fitCakeLines() {
+      const lines = document.querySelectorAll('.cake-line');
+      lines.forEach(line => {
+        const inner = line.querySelector('.line-inner');
+        if (!inner) return;
+        inner.style.transform = 'none';
+        const targetW = line.clientWidth;
+        const currentW = inner.scrollWidth;
+        if (currentW > 0 && targetW > 0) {
+          const scaleX = targetW / currentW;
+          inner.style.transform = `scaleX(${scaleX})`;
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', fitCakeLines);
+    window.addEventListener('load', fitCakeLines);
+    window.addEventListener('resize', fitCakeLines);
+
+    /* =========================================================
+       2. АУДИО-ДВИЖОК:
+          - Автозапуск мелодии при входе
+          - Приятные мелодичные клики (калимба/колокольчики) для слов
+          - Звук задувания для свечей
+       ========================================================= */
+    if (navigator.audioSession) {
+      try { navigator.audioSession.type = 'playback'; } catch (e) {}
+    }
+
+    function createWavUrl(samples, sampleRate = 22050) {
+      const buffer = new ArrayBuffer(44 + samples.length * 2);
+      const view = new DataView(buffer);
+      const writeStr = (offset, str) => {
+        for (let i = 0; i < str.length; i++) view.setUint8(offset + i, str.charCodeAt(i));
+      };
+      writeStr(0, 'RIFF');
+      view.setUint32(4, 36 + samples.length * 2, true);
+      writeStr(8, 'WAVE');
+      writeStr(12, 'fmt ');
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true);
+      view.setUint16(22, 1, true);
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      writeStr(36, 'data');
+      view.setUint32(40, samples.length * 2, true);
+
+      for (let i = 0; i < samples.length; i++) {
+        let s = Math.max(-1, Math.min(1, samples[i]));
+        view.setInt16(44 + i * 2, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+      }
+
+      const blob = new Blob([buffer], { type: 'audio/wav' });
+      return URL.createObjectURL(blob);
+    }
+
+    // 1. Звук задувания свечи
+    function buildBlowSound() {
+      const sr = 22050;
+      const len = Math.floor(sr * 0.42);
+      const out = new Float32Array(len);
+      let last = 0;
+      for (let i = 0; i < len; i++) {
+        const t = i / sr;
+        const env = Math.exp(-t * 9.5);
+        const white = (Math.random() * 2 - 1);
+        last = 0.86 * last + 0.14 * white;
+        const sparkle = Math.sin(2 * Math.PI * 1046.5 * t) * Math.exp(-t * 12) * 0.25;
+        out[i] = (last * env * 0.85) + sparkle;
+      }
+      return createWavUrl(out, sr);
+    }
+
+    // 2. Приятные ASMR-клики / ноты калимбы при нажатии на слова поздравлений
+    function buildWordClickNote(freq) {
+      const sr = 22050;
+      const len = Math.floor(sr * 0.36);
+      const out = new Float32Array(len);
+      for (let i = 0; i < len; i++) {
+        const t = i / sr;
+        const attack = Math.min(1, t / 0.004);
+        // Мягкий бархатный деревянно-стеклянный клик в первые 12 мс
+        const softClick = Math.sin(2 * Math.PI * (freq * 2.5) * t) * Math.exp(-t * 140) * 0.35;
+        // Тёплое послезвучие калимбы / колокольчика
+        const body = (Math.sin(2 * Math.PI * freq * t) * 0.65 +
+                      Math.sin(2 * Math.PI * (freq * 2) * t) * 0.22 +
+                      Math.sin(2 * Math.PI * (freq * 3) * t) * 0.06) * Math.exp(-t * 11);
+        out[i] = (softClick + body) * attack;
+      }
+      return createWavUrl(out, sr);
+    }
+
+    // Пентатоническая гамма (любое сочетание нот звучит гармонично и приятно для ушей)
+    const PENTATONIC_FREQS = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66, 1318.51, 1567.98];
+    const wordNoteUrls = PENTATONIC_FREQS.map(f => buildWordClickNote(f));
+    let noteIndex = 0;
+
+    function playPleasantWordSound() {
+      try {
+        const url = wordNoteUrls[noteIndex % wordNoteUrls.length];
+        noteIndex++;
+        const a = new Audio(url);
+        a.volume = 0.85;
+        a.play().catch(() => {});
+      } catch (e) {}
+    }
+
+    // 3. Праздничная мелодия "Happy Birthday to You"
+    function buildHappyBirthdaySong() {
+      const sr = 22050;
+      const notes = [
+        [392.00, 0.28], [392.00, 0.22], [440.00, 0.45], [392.00, 0.45], [523.25, 0.45], [493.88, 0.80],
+        [392.00, 0.28], [392.00, 0.22], [440.00, 0.45], [392.00, 0.45], [587.33, 0.45], [523.25, 0.80],
+        [392.00, 0.28], [392.00, 0.22], [783.99, 0.45], [659.25, 0.45], [523.25, 0.45], [493.88, 0.45], [440.00, 0.75],
+        [698.46, 0.28], [698.46, 0.22], [659.25, 0.45], [523.25, 0.45], [587.33, 0.45], [523.25, 0.95]
+      ];
+
+      let totalDuration = 0;
+      notes.forEach(n => totalDuration += n[1]);
+      const out = new Float32Array(Math.ceil(totalDuration * sr));
+
+      let offset = 0;
+      notes.forEach(([freq, dur]) => {
+        const count = Math.floor(dur * sr);
+        for (let i = 0; i < count; i++) {
+          const t = i / sr;
+          const attack = Math.min(1, t / 0.012);
+          const decay = Math.exp(-t * 3.6);
+          const wave = Math.sin(2 * Math.PI * freq * t) * 0.58 +
+                       Math.sin(2 * Math.PI * freq * 2 * t) * 0.22 +
+                       Math.sin(2 * Math.PI * freq * 3 * t) * 0.08;
+          if (offset + i < out.length) {
+            out[offset + i] = wave * attack * decay;
+          }
+        }
+        offset += count;
+      });
+
+      return createWavUrl(out, sr);
+    }
+
+    const blowUrl = buildBlowSound();
+    const songUrl = buildHappyBirthdaySong();
+    const songAudio = new Audio(songUrl);
+    songAudio.preload = 'auto';
+
+    function playBlowFX() {
+      try {
+        const a = new Audio(blowUrl);
+        a.volume = 0.9;
+        a.play().catch(() => {});
+      } catch (e) {}
+    }
+
+    let songPlaying = false;
+    songAudio.addEventListener('ended', () => { songPlaying = false; });
+
+    function playBirthdaySong(restart = true) {
+      try {
+        if (restart) songAudio.currentTime = 0;
+        songAudio.volume = 1.0;
+        const p = songAudio.play();
+        if (p !== undefined) {
+          p.then(() => {
+            songPlaying = true;
+            removeAutoplayUnlockListeners();
+          }).catch(() => {});
+        }
+      } catch (e) {}
+    }
+
+    // Автозапуск музыки при входе + мгновенный подхват при первом касании, если браузер блокирует автоплей
+    let unlocked = false;
+    function unlockAndPlayOnFirstGesture() {
+      if (unlocked) return;
+      unlocked = true;
+      if (!songPlaying) {
+        playBirthdaySong(true);
+      }
+      removeAutoplayUnlockListeners();
+    }
+
+    function removeAutoplayUnlockListeners() {
+      ['touchstart', 'pointerdown', 'mousedown', 'keydown'].forEach(evt => {
+        window.removeEventListener(evt, unlockAndPlayOnFirstGesture, true);
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Пытаемся запустить сразу при открытии страницы
+      playBirthdaySong(true);
+      // Если мобильный браузер требует касания — запустится в ту же миллисекунду при касании экрана
+      ['touchstart', 'pointerdown', 'mousedown', 'keydown'].forEach(evt => {
+        window.addEventListener(evt, unlockAndPlayOnFirstGesture, { capture: true, passive: true });
+      });
+    });
+
+    document.getElementById('music-btn').addEventListener('click', () => {
+      playBirthdaySong(true);
+    });
+
+    /* =========================================================
+       3. КОНФЕТТИ, СВЕЧИ И НАЖАТИЯ НА СЛОВА
+       ========================================================= */
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    let W = (canvas.width = window.innerWidth);
+    let H = (canvas.height = window.innerHeight);
+
+    window.addEventListener('resize', () => {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    });
+
+    let particles = [];
+    const COLORS = ['#f72585', '#38bdf8', '#ffd166', '#a3e635', '#c084fc', '#ffffff', '#ff6b6b'];
+
+    class Confetti {
+      constructor(x, y) {
+        this.x = x || W / 2;
+        this.y = y || H / 3;
+        this.size = Math.random() * 6 + 3.5;
+        const angle = Math.random() * Math.PI * 2;
+        const vel = Math.random() * 9 + 3.5;
+        this.vx = Math.cos(angle) * vel;
+        this.vy = Math.sin(angle) * vel - 2.5;
+        this.gravity = 0.22;
+        this.drag = 0.96;
+        this.rotation = Math.random() * 360;
+        this.rotSpeed = (Math.random() - 0.5) * 12;
+        this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+        this.alpha = 1;
+        this.decay = Math.random() * 0.012 + 0.008;
+      }
+      update() {
+        this.vx *= this.drag;
+        this.vy = this.vy * this.drag + this.gravity;
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rotation += this.rotSpeed;
+        this.alpha -= this.decay;
+      }
+      draw(c) {
+        if (this.alpha <= 0) return;
+        c.save();
+        c.translate(this.x, this.y);
+        c.rotate((this.rotation * Math.PI) / 180);
+        c.globalAlpha = Math.max(0, this.alpha);
+        c.fillStyle = this.color;
+        c.fillRect(-this.size / 2, -this.size / 2, this.size, this.size * 0.65);
+        c.restore();
+      }
+    }
+
+    let active = false;
+    function burst(x, y, count = 120) {
+      for (let i = 0; i < count; i++) particles.push(new Confetti(x, y));
+      if (!active) {
+        active = true;
+        animate();
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      particles = particles.filter(p => p.alpha > 0);
+      particles.forEach(p => { p.update(); p.draw(ctx); });
+      if (particles.length > 0) {
+        requestAnimationFrame(animate);
+      } else {
+        active = false;
+        ctx.clearRect(0, 0, W, H);
+      }
+    }
+
+    // Задувание свечей
+    const candles = document.querySelectorAll('.candle');
+    const msg = document.getElementById('celebrate-msg');
+    const relightBtn = document.getElementById('relight-btn');
+    let blown = 0;
+
+    candles.forEach(c => {
+      const blow = () => {
+        if (c.classList.contains('extinguished')) return;
+        playBlowFX();
+        c.classList.add('extinguished');
+        blown++;
+
+        if (blown === candles.length) {
+          msg.classList.add('show');
+          relightBtn.style.display = 'inline-block';
+          setTimeout(() => playBirthdaySong(true), 250);
+          const r = c.parentElement.getBoundingClientRect();
+          burst(r.left + r.width / 2, r.top + r.height / 2, 160);
+        }
+      };
+      c.addEventListener('click', blow);
+    });
+
+    // Нажатие на любое слово в торте: приятный мелодичный клик + искры + анимация
+    document.querySelectorAll('.w').forEach(word => {
+      word.addEventListener('click', (e) => {
+        playPleasantWordSound();
+        word.classList.add('pop');
+        setTimeout(() => word.classList.remove('pop'), 260);
+        burst(e.clientX, e.clientY, 14);
+      });
+    });
+
+    // Кнопка "Зажечь свечи снова"
+    relightBtn.addEventListener('click', () => {
+      candles.forEach((c, idx) => {
+        setTimeout(() => c.classList.remove('extinguished'), idx * 55);
+      });
+      blown = 0;
+      msg.classList.remove('show');
+      relightBtn.style.display = 'none';
+      playPleasantWordSound();
+    });
+  </script>
+</body>
+</html>
+
